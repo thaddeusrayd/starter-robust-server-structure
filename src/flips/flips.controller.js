@@ -64,8 +64,41 @@ function read(req, res) {
   res.json({ data: foundFlip });
 }
 
+function update(req, res) {
+  const { flipId } = req.params;
+  const foundFlip = flips.find((flip) => flip.id === Number(flipId));
+
+  const originalResult = foundFlip.result;
+  const { data: { result } = {} } = req.body;
+
+  if (originalResult !== result) {
+    // update the flip
+    foundFlip.result = result;
+    // Adjust the counts
+    counts[originalResult] = counts[originalResult] - 1;
+    counts[result] = counts[result] + 1;
+  }
+
+  res.json({ data: foundFlip });
+}
+
+function destroy(req, res) {
+  const { flipId } = req.params;
+  const index = flips.findIndex((flip) => flip.id === Number(flipId));
+  // `splice()` returns an array of the deleted elements, even if it is one element
+  const deletedFlips = flips.splice(index, 1);
+  deletedFlips.forEach(
+    (deletedFlip) =>
+      (counts[deletedFlip.result] = counts[deletedFlip.result] - 1)
+  );
+
+  res.sendStatus(204);
+}
+
 module.exports = {
   create: [bodyHasResultProperty, resultPropertyIsValid, create],
   list,
   read: [flipExists, read],
+  update: [flipExists, bodyHasResultProperty, resultPropertyIsValid, update],
+  destroy: [flipExists, destroy],
 };
