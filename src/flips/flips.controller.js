@@ -1,7 +1,9 @@
 const flips = require("../data/flips-data");
 
 function list(req, res) {
-  res.json({ data: flips });
+  const { countId } = req.params;
+  const byResult = countId ? (flip) => flip.result === countId : () => true;
+  res.json({ data: flips.filter(byResult) });
 }
 
 module.exports = {
