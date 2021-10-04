@@ -12,7 +12,7 @@ app.use("/counts/:countId", (req, res, next) => {
   const foundCount = counts[countId];
 
   if (foundCount === undefined) {
-    next(`Count id not found: ${countId}`);
+    next({ status: 404, message: `Count id not found: ${countId}` });
   } else {
     res.json({ data: foundCount });
   }
@@ -29,7 +29,7 @@ app.use("/flips/:flipId", (req, res, next) => {
   if (foundFlip) {
     res.json({ data: foundFlip });
   } else {
-    next(`Flip not found: ${flipId}`);
+    next({ status: 404, message: `Flip not found: ${flipId}` });
   }
 });
 
@@ -66,9 +66,10 @@ app.use((request, response, next) => {
 });
 
 // Error handler
-app.use((error, request, response, next) => {
+app.use((error, req, res, next) => {
   console.error(error);
-  response.send(error);
+  const { status = 500, message = "Something went wrong!" } = error;
+  res.status(status).json({ error: message });
 });
 
 module.exports = app;
