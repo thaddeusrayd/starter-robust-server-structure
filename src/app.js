@@ -24,21 +24,7 @@ app.use("/counts", (req, res) => {
   res.json({ data: counts });
 });
 
-app.use("/flips/:flipId", (req, res, next) => {
-  const { flipId } = req.params;
-  const foundFlip = flips.find((flip) => flip.id === Number(flipId));
-
-  if (foundFlip) {
-    res.json({ data: foundFlip });
-  } else {
-    next({ status: 404, message: `Flip not found: ${flipId}` });
-  }
-});
-
 app.use("/flips", flipsRouter); // Note: app.use
-
-// Variable to hold the next ID
-// Because some IDs may already be used, find the largest assigned ID
 
 // Not found handler
 app.use((request, response, next) => {

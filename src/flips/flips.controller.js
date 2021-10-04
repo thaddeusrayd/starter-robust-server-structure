@@ -46,7 +46,26 @@ function resultPropertyIsValid(req, res, next) {
   });
 }
 
+function flipExists(req, res, next) {
+  const { flipId } = req.params;
+  const foundFlip = flips.find((flip) => flip.id === Number(flipId));
+  if (foundFlip) {
+    return next();
+  }
+  next({
+    status: 404,
+    message: `Flip id not found: ${flipId}`,
+  });
+}
+
+function read(req, res) {
+  const { flipId } = req.params;
+  const foundFlip = flips.find((flip) => flip.id === Number(flipId));
+  res.json({ data: foundFlip });
+}
+
 module.exports = {
   create: [bodyHasResultProperty, resultPropertyIsValid, create],
   list,
+  read: [flipExists, read],
 };
