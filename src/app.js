@@ -49,7 +49,7 @@ app.post("/flips", (req, res, next) => {
   };
   flips.push(newFlip);
   counts[result] = counts[result] + 1; // Increment the counts
-  res.json({ data: newFlip });
+  res.status(201).json({ data: newFlip });
 });
 
 // Not found handler
