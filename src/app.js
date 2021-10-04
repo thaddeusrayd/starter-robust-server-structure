@@ -39,21 +39,25 @@ app.get("/flips", (req, res) => {
 
 // Variable to hold the next ID
 // Because some IDs may already be used, find the largest assigned ID
-let lastFlipId = flips.reduce((maxId, flip) => Math.max(maxId, flip.id), 0);
-
-app.post("/flips", (req, res, next) => {
+function bodyHasResultProperty(req, res, next) {
   const { data: { result } = {} } = req.body;
   if (result) {
-    const newFlip = {
-      id: ++lastFlipId, // Increment last ID, then assign as the current ID
-      result,
-    };
-    flips.push(newFlip);
-    counts[result] = counts[result] + 1; // Increment the counts
-    res.status(201).json({ data: newFlip });
+    next();
   } else {
-    res.sendStatus(400);
+    next({ status: 400, message: "A result property is required" });
   }
+}
+
+let lastFlipId = flips.reduce((maxId, flip) => Math.max(maxId, flip.id), 0);
+
+app.post("/flips", bodyHasResultProperty, (req, res) => {
+  const { data: { result } = {} } = req.body;
+  const newFlip = {
+    id: ++lastFlipId, // Increment last ID, then assign as the current ID
+    result: result,
+  };
+  flips.push(newFlip);
+  res.status(201).json({ data: newFlip });
 });
 
 // Not found handler
