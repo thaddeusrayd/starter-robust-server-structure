@@ -5,6 +5,8 @@ const app = express();
 const flips = require("./data/flips-data");
 const counts = require("./data/counts-data");
 
+app.use(express.json());
+
 app.use("/counts/:countId", (req, res, next) => {
   const { countId } = req.params;
   const foundCount = counts[countId];
@@ -31,7 +33,7 @@ app.use("/flips/:flipId", (req, res, next) => {
   }
 });
 
-app.use("/flips", (req, res) => {
+app.get("/flips", (req, res) => {
   res.json({ data: flips });
 });
 
