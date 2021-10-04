@@ -1,4 +1,6 @@
 const express = require("express");
+const flipsRouter = require("./flips/flips.router");
+
 const app = express();
 
 // TODO: Follow instructions in the checkpoint to implement ths API.
@@ -33,32 +35,10 @@ app.use("/flips/:flipId", (req, res, next) => {
   }
 });
 
-app.get("/flips", (req, res) => {
-  res.json({ data: flips });
-});
+app.use("/flips", flipsRouter); // Note: app.use
 
 // Variable to hold the next ID
 // Because some IDs may already be used, find the largest assigned ID
-function bodyHasResultProperty(req, res, next) {
-  const { data: { result } = {} } = req.body;
-  if (result) {
-    next();
-  } else {
-    next({ status: 400, message: "A result property is required" });
-  }
-}
-
-let lastFlipId = flips.reduce((maxId, flip) => Math.max(maxId, flip.id), 0);
-
-app.post("/flips", bodyHasResultProperty, (req, res) => {
-  const { data: { result } = {} } = req.body;
-  const newFlip = {
-    id: ++lastFlipId, // Increment last ID, then assign as the current ID
-    result: result,
-  };
-  flips.push(newFlip);
-  res.status(201).json({ data: newFlip });
-});
 
 // Not found handler
 app.use((request, response, next) => {
